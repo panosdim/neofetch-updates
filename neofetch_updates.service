@@ -1,0 +1,9 @@
+[Unit]
+Description=Script to check for available package updates
+
+[Service]
+ExecStart=/usr/bin/checkupdates
+StandardOutput=file:/var/neofetch_updates
+
+[Install]
+WantedBy=multi-user.target

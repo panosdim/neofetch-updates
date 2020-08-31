@@ -1,0 +1,40 @@
+#!/bin/sh
+# ---------------------------------------------------------------------------
+# install.sh -- Install neofetch updates utility
+#
+# Copyright 2020 Panagiotis Dimopoulos (panosdim@gmail.com)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License at (http://www.gnu.org/licenses/) for
+# more details.
+#
+# Version: 1.0
+# ---------------------------------------------------------------------------
+
+if [ "$EUID" -ne 0 ]; then
+    exec sudo -E bash "$0" "$@"
+fi
+
+# Check if checkupdates command is available
+command -v checkupdates > /dev/null \
+    || { echo "checkupdates command not found. Please install it first with pacman.";
+    exit 1; }
+
+# Check if neofetch command is available
+command -v neofetch > /dev/null \
+    || { echo "neofetch command not found. Please install it first with pacman.";
+    exit 1; }
+
+cp config.conf ${HOME}/.config/neofetch
+cp neofetch_updates.service /usr/lib/systemd/system
+cp neofetch_updates.timer /usr/lib/systemd/system
+systemctl start neofetch_updates.timer
+systemctl enable neofetch_updates.timer
+echo "alias update='sudo rm -f /var/neofetch_updates && sudo pacman --noconfirm -Syu'" >> ${HOME}/.bashrc.alias
